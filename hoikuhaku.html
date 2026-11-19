@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保育博2027 ほいコレ ブースアンケート</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      font-family: 'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fff5f7 0%, #fffbeb 50%, #f0f9ff 100%);
+    }
+    .card-btn {
+      transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease;
+    }
+    .card-btn:active {
+      transform: scale(0.96);
+    }
+    @keyframes popRing {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      100% { transform: scale(1.06); opacity: 0; }
+    }
+    .tap-ripple {
+      animation: popRing 0.45s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-48px) scale(1.25); opacity: 0; }
+    }
+    .plus-one {
+      animation: floatUp 0.65s ease-out forwards;
+      pointer-events: none;
+    }
+    .logo-box {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .logo-box img {
+      max-height: 100%;
+      max-width: 165px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen text-slate-800">
+
+  <!-- ヘッダー（属性切替なし・シンプル構成） -->
+  <header class="flex items-center justify-between px-5 py-3 bg-white/90 backdrop-blur-md border-b border-pink-100 shadow-sm shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-sm tracking-wide shadow-sm">
+        ほいコレ
+      </div>
+      <div>
+        <h1 class="text-lg md:text-xl font-extrabold text-slate-800 leading-tight">
+          いま、一番気になっているテーマはどれですか？
+        </h1>
+        <p class="text-xs text-slate-500 font-medium">
+          当てはまるものをタップしてください（複数選択OK！）
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <!-- 同期ステータス -->
+      <div id="syncBadge" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>リアルタイム同期中</span>
+      </div>
+
+      <!-- 総回答数 -->
+      <div class="px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-right">
+        <span class="text-[10px] font-bold text-slate-500 block leading-none">TOTAL</span>
+        <span id="totalCountDisplay" class="text-lg font-extrabold text-slate-800 leading-tight">0</span>
+        <span class="text-xs font-bold text-slate-500">票</span>
+      </div>
+
+      <!-- 音声ON/OFF -->
+      <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="効果音切替">
+        <svg id="soundOnIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
+        </svg>
+        <svg id="soundOffIcon" class="w-5 h-5 hidden text-slate-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/>
+        </svg>
+      </button>
+
+      <!-- 管理・集計モーダルボタン -->
+      <button onclick="openAdminModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold shadow-sm transition">
+        集計・設定
+      </button>
+    </div>
+  </header>
+
+  <!-- メイン6タイルエリア -->
+  <main class="flex-1 p-4 md:p-5 grid grid-cols-2 md:grid-cols-3 grid-rows-3 md:grid-rows-2 gap-3.5 md:gap-4 min-h-0">
+    <!-- JSで6カードを自動生成 -->
+    <div id="cardsContainer" class="contents"></div>
+  </main>
+
+  <!-- フッター（誤タップ取消＆ROOM ID表示） -->
+  <footer class="px-5 py-2 bg-white/80 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500 shrink-0">
+    <div class="flex items-center gap-2">
+      <span>同期ルーム:</span>
+      <code id="roomNameDisplay" class="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">hoikuhaku2026</code>
+    </div>
+    <button onclick="undoLastTap()" id="undoBtn" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 font-bold text-slate-600 transition flex items-center gap-1">
+      <span>↩</span>
+      <span>直前の1タップを取り消す</span>
+    </button>
+  </footer>
+
+  <!-- タップ御礼トースト -->
+  <div id="thanksToast" class="fixed bottom-14 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-full bg-slate-900/90 text-white font-bold text-sm shadow-xl opacity-0 pointer-events-none transition-opacity duration-200 z-40">
+    ご回答ありがとうございます！
+  </div>
+
+  <!-- 集計・管理モーダル -->
+  <div id="adminModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h2 class="text-lg font-extrabold text-slate-800">集計結果・ブース運用設定</h2>
+        <button onclick="closeAdminModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-600">✕</button>
+      </div>
+
+      <!-- 現在の集計一覧 -->
+      <div class="mt-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-slate-500">項目別カウント状況</span>
+          <button onclick="exportCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+            CSVダウンロード
+          </button>
+        </div>
+        <div id="adminSummaryList" class="space-y-2"></div>
+      </div>
+
+      <!-- 初期票（サクラ票）設定 -->
+      <div class="mt-6 pt-4 border-t border-slate-100">
+        <h3 class="text-sm font-extrabold text-slate-700 mb-1">開場前の初期票（ベース票）設定</h3>
+        <p class="text-xs text-slate-500 mb-3">0票スタートを避けたい場合、各項目に初期値をセットできます（全端末に同期されます）。</p>
+        <div id="seedInputsContainer" class="grid grid-cols-2 gap-2.5 mb-3"></div>
+        <div class="flex gap-2">
+          <button onclick="applySeedCounts()" class="flex-1 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white text-xs font-extrabold shadow-sm transition">
+            この票数を全端末に反映する
+          </button>
+          <button onclick="resetAllCounts()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 text-xs font-bold transition">
+            すべて0にリセット
+          </button>
+        </div>
+      </div>
+
+      <!-- 同期ルーム変更 -->
+      <div class="mt-5 pt-4 border-t border-slate-100">
+        <label class="block text-xs font-bold text-slate-600 mb-1">同期ルームID（複数iPadで同じIDにするとリアルタイム同期）</label>
+        <div class="flex gap-2">
+          <input id="roomInput" type="text" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono font-bold" placeholder="hoikuhaku2026" />
+          <button onclick="changeRoom()" class="px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold">切替</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Realtime Database SDK（オンライン同期用） -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // 6項目の定義（4項目にROOTフォルダ内のロゴ画像を紐付け）
+    const ITEMS = [
+      {
+        id: "fair",
+        category: "新卒採用系",
+        title: "新卒採用（就職フェア）",
+        sub: "学生と直接話したい・母集団を増やしたい",
+        logo: "./fair.png",
+        fallbackIcon: "🎪",
+        border: "border-pink-200 hover:border-pink-400",
+        badgeBg: "bg-pink-100 text-pink-700",
+        barColor: "bg-pink-500",
+        accentText: "text-pink-600"
+      },
+      {
+        id: "navi",
+        category: "新卒採用系",
+        title: "新卒採用（求人サイト）",
+        sub: "ほいコレナビ・Web媒体で応募を増やしたい",
+        logo: "./navi.png",
+        fallbackIcon: "💻",
+        border: "border-rose-200 hover:border-rose-400",
+        badgeBg: "bg-rose-100 text-rose-700",
+        barColor: "bg-rose-500",
+        accentText: "text-rose-600"
+      },
+      {
+        id: "trend",
+        category: "新卒採用系",
+        title: "新卒採用全般（最新動向）",
+        sub: "現在の学生の動きや最新の採用トレンドを知りたい",
+        logo: "./hoikore.png",
+        fallbackIcon: "📊",
+        border: "border-amber-200 hover:border-amber-400",
+        badgeBg: "bg-amber-100 text-amber-800",
+        barColor: "bg-amber-500",
+        accentText: "text-amber-600"
+      },
+      {
+        id: "enkatsu",
+        category: "園児募集系",
+        title: "園児募集・集客",
+        sub: "地域の保護者に選ばれる園づくり・定員充足",
+        logo: "./enkatsu.png",
+        fallbackIcon: "🏫",
+        border: "border-emerald-200 hover:border-emerald-400",
+        badgeBg: "bg-emerald-100 text-emerald-700",
+        barColor: "bg-emerald-500",
+        accentText: "text-emerald-600"
+      },
+      {
+        id: "hp",
+        category: "クリエイティブ領域",
+        title: "HP制作・リニューアル",
+        sub: "採用や園児募集に強いホームページを作りたい",
+        logo: null,
+        fallbackIcon: "🖥️",
+        border: "border-sky-200 hover:border-sky-400",
+        badgeBg: "bg-sky-100 text-sky-700",
+        barColor: "bg-sky-500",
+        accentText: "text-sky-600"
+      },
+      {
+        id: "movie",
+        category: "クリエイティブ領域",
+        title: "PR動画・SNS発信",
+        sub: "園の雰囲気や保育の様子を動画で伝えたい",
+        logo: null,
+        fallbackIcon: "🎬",
+        border: "border-indigo-200 hover:border-indigo-400",
+        badgeBg: "bg-indigo-100 text-indigo-700",
+        barColor: "bg-indigo-500",
+        accentText: "text-indigo-600"
+      }
+    ];
+
+    // 状態管理
+    let counts = { fair: 0, navi: 0, trend: 0, enkatsu: 0, hp: 0, movie: 0 };
+    let tapHistory = [];
+    let soundEnabled = true;
+    let roomId = new URLSearchParams(window.location.search).get("room") || localStorage.getItem("hoikore_room") || "hoikuhaku2026";
+    let db = null;
+    let isOnlineSynced = false;
+
+    document.getElementById("roomNameDisplay").textContent = roomId;
+    document.getElementById("roomInput").value = roomId;
+
+    // ローカルストレージから初期復元
+    const savedLocal = localStorage.getItem("hoikore_counts_" + roomId);
+    if (savedLocal) {
+      try { counts = { ...counts, ...JSON.parse(savedLocal) }; } catch (e) {}
+    }
+
+    // オンライン同期セットアップ（パブリックデモ用Firebase構成／失敗時は自動ローカル動作）
+    function initSync() {
+      try {
+        const firebaseConfig = {
+          databaseURL: "https://hoikore-booth-demo-default-rtdb.firebaseio.com"
+        };
+        const app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        const roomRef = ref(db, "rooms/" + roomId + "/counts");
+
+        onValue(roomRef, (snapshot) => {
+          const val = snapshot.val();
+          if (val) {
+            counts = { fair: 0, navi: 0, trend: 0, enkatsu: 0, hp: 0, movie: 0, ...val };
+            localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
+            renderCards();
+            renderAdminSummary();
+          } else {
+            set(roomRef, counts);
+          }
+          isOnlineSynced = true;
+          updateSyncBadge(true);
+        }, () => {
+          isOnlineSynced = false;
+          updateSyncBadge(false);
+        });
+      } catch (e) {
+        updateSyncBadge(false);
+      }
+    }
+
+    function updateSyncBadge(online) {
+      const badge = document.getElementById("syncBadge");
+      if (!badge) return;
+      if (online) {
+        badge.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>全端末同期中</span>`;
+      } else {
+        badge.className = "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>端末内保存モード</span>`;
+      }
+    }
+
+    // 効果音（Web Audio API）
+    function playPopSound() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.09);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch (e) {}
+    }
+
+    window.toggleSound = function () {
+      soundEnabled = !soundEnabled;
+      document.getElementById("soundOnIcon").classList.toggle("hidden", !soundEnabled);
+      document.getElementById("soundOffIcon").classList.toggle("hidden", soundEnabled);
+    };
+
+    // タップ処理
+    window.handleCardTap = function (itemId, event) {
+      playPopSound();
+
+      // カウント加算
+      counts[itemId] = (counts[itemId] || 0) + 1;
+      tapHistory.push({ itemId, time: new Date().toISOString() });
+      localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
+
+      // Firebaseトランザクション更新
+      if (db && isOnlineSynced) {
+        const itemRef = ref(db, `rooms/${roomId}/counts/${itemId}`);
+        runTransaction(itemRef, (curr) => (curr || 0) + 1);
+      }
+
+      renderCards();
+      showTapFeedback(itemId);
+    };
+
+    function showTapFeedback(itemId) {
+      const card = document.getElementById("card-" + itemId);
+      if (card) {
+        const plus = document.createElement("div");
+        plus.textContent = "+1";
+        plus.className = "plus-one absolute top-4 right-5 text-2xl font-extrabold text-pink-500 drop-shadow-sm";
+        card.appendChild(plus);
+        setTimeout(() => plus.remove(), 700);
+      }
+      const toast = document.getElementById("thanksToast");
+      toast.style.opacity = "1";
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { toast.style.opacity = "0"; }, 1100);
+    }
+
+    // 直前の1タップ取り消し
+    window.undoLastTap = function () {
+      if (tapHistory.length === 0) return;
+      const last = tapHistory.pop();
+      if (counts[last.itemId] > 0) {
+        counts[last.itemId] -= 1;
+        localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
+        if (db && isOnlineSynced) {
+          const itemRef = ref(db, `rooms/${roomId}/counts/${last.itemId}`);
+          runTransaction(itemRef, (curr) => Math.max(0, (curr || 0) - 1));
+        }
+        renderCards();
+      }
+    };
+
+    // 順位計算
+    function getRanks() {
+      const sorted = [...ITEMS]
+        .map(it => ({ id: it.id, count: counts[it.id] || 0 }))
+        .filter(x => x.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+      const rankMap = {};
+      sorted.forEach((item, idx) => {
+        if (idx > 0 && item.count === sorted[idx - 1].count) {
+          rankMap[item.id] = rankMap[sorted[idx - 1].id];
+        } else {
+          rankMap[item.id] = idx + 1;
+        }
+      });
+      return rankMap;
+    }
+
+    // カード描画
+    function renderCards() {
+      const container = document.getElementById("cardsContainer");
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      document.getElementById("totalCountDisplay").textContent = total;
+      const ranks = getRanks();
+
+      container.innerHTML = ITEMS.map((item) => {
+        const count = counts[item.id] || 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        const rank = ranks[item.id];
+
+        let rankBadge = "";
+        if (rank === 1) {
+          rankBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-amber-950 text-xs font-extrabold shadow-sm">👑 1位</span>`;
+        } else if (rank === 2) {
+          rankBadge = `<span class="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-extrabold">2位</span>`;
+        } else if (rank === 3) {
+          rankBadge = `<span class="px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold">3位</span>`;
+        }
+
+        // ロゴ画像またはアイコン表示（読み込みエラー時は自動フォールバック）
+        const mediaHtml = item.logo
+          ? `<div class="logo-box">
+               <img src="${item.logo}" alt="${item.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+               <span style="display:none;" class="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center text-2xl">${item.fallbackIcon}</span>
+             </div>`
+          : `<div class="logo-box">
+               <span class="w-11 h-11 rounded-2xl bg-slate-100 inline-flex items-center justify-center text-2xl">${item.fallbackIcon}</span>
+             </div>`;
+
+        return `
+          <button
+            id="card-${item.id}"
+            onclick="handleCardTap('${item.id}', event)"
+            class="card-btn relative bg-white rounded-3xl p-4 md:p-5 border-2 ${item.border} shadow-sm hover:shadow-md flex flex-col justify-between text-left overflow-hidden h-full"
+          >
+            <!-- 上部：カテゴリ＆順位 -->
+            <div class="w-full flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${item.badgeBg}">
+                ${item.category}
+              </span>
+              <div class="flex items-center gap-1.5">
+                ${rankBadge}
+              </div>
+            </div>
+
+            <!-- 中央：ロゴ＋タイトル＋補足 -->
+            <div class="my-auto py-1">
+              <div class="mb-2">${mediaHtml}</div>
+              <h2 class="text-base md:text-xl font-extrabold text-slate-800 leading-snug">
+                ${item.title}
+              </h2>
+              <p class="text-xs md:text-sm text-slate-500 font-medium mt-1 line-clamp-2">
+                ${item.sub}
+              </p>
+            </div>
+
+            <!-- 下部：リアルタイム票数・割合バー -->
+            <div class="w-full pt-2 border-t border-slate-100">
+              <div class="flex items-baseline justify-between mb-1">
+                <span class="text-xs font-bold text-slate-400">タップして投票</span>
+                <div>
+                  <span class="text-xl md:text-2xl font-extrabold ${item.accentText}">${count}</span>
+                  <span class="text-xs font-bold text-slate-500">票 (${pct}%)</span>
+                </div>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full ${item.barColor} transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join("");
+    }
+
+    // 管理モーダル制御
+    window.openAdminModal = function () {
+      renderAdminSummary();
+      const seedContainer = document.getElementById("seedInputsContainer");
+      seedContainer.innerHTML = ITEMS.map(it => `
+        <div class="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+          <span class="text-xs font-bold text-slate-700 truncate pr-2">${it.title}</span>
+          <input id="seed-${it.id}" type="number" min="0" value="${counts[it.id] || 0}" class="w-16 px-2 py-1 rounded-lg border border-slate-300 text-right text-sm font-extrabold" />
+        </div>
+      `).join("");
+      document.getElementById("adminModal").classList.remove("hidden");
+      document.getElementById("adminModal").classList.add("flex");
+    };
+
+    window.closeAdminModal = function () {
+      document.getElementById("adminModal").classList.add("hidden");
+      document.getElementById("adminModal").classList.remove("flex");
+    };
+
+    function renderAdminSummary() {
+      const el = document.getElementById("adminSummaryList");
+      if (!el) return;
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      el.innerHTML = ITEMS.map(it => {
+        const c = counts[it.id] || 0;
+        const pct = total > 0 ? ((c / total) * 100).toFixed(1) : "0.0";
+        return `
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 text-xs">
+            <span class="font-bold text-slate-700">${it.title}</span>
+            <span class="font-extrabold text-slate-900">${c} 票 <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.applySeedCounts = function () {
+      ITEMS.forEach(it => {
+        const val = parseInt(document.getElementById("seed-" + it.id).value, 10);
+        counts[it.id] = isNaN(val) || val < 0 ? 0 : val;
+      });
+      localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
+      if (db && isOnlineSynced) {
+        set(ref(db, "rooms/" + roomId + "/counts"), counts);
+      }
+      renderCards();
+      renderAdminSummary();
+      closeAdminModal();
+    };
+
+    window.resetAllCounts = function () {
+      if (!confirm("すべてのカウントを0にリセットしますか？")) return;
+      ITEMS.forEach(it => { counts[it.id] = 0; });
+      tapHistory = [];
+      localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
+      if (db && isOnlineSynced) {
+        set(ref(db, "rooms/" + roomId + "/counts"), counts);
+      }
+      renderCards();
+      renderAdminSummary();
+      closeAdminModal();
+    };
+
+    window.changeRoom = function () {
+      const nextRoom = document.getElementById("roomInput").value.trim();
+      if (!nextRoom) return;
+      localStorage.setItem("hoikore_room", nextRoom);
+      window.location.search = "?room=" + encodeURIComponent(nextRoom);
+    };
+
+    // CSV出力（属性列なし）
+    window.exportCSV = function () {
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      const rows = [["カテゴリ", "項目名", "票数", "構成比(%)"]];
+      ITEMS.forEach(it => {
+        const c = counts[it.id] || 0;
+        const pct = total > 0 ? ((c / total) * 100).toFixed(1) : "0.0";
+        rows.push([it.category, it.title, c, pct]);
+      });
+      const csvContent = "\uFEFF" + rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `hoikore_booth_${roomId}_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // 初期描画＆同期開始
+    renderCards();
+    initSync();
+  </script>
+</body>
+</html>
