@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ほいコレアンケート" />
   <title>保育博2027 ほいコレ ブースアンケート</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,13 +28,6 @@
     .card-btn:active {
       transform: scale(0.96);
     }
-    @keyframes popRing {
-      0% { transform: scale(0.95); opacity: 0.9; }
-      100% { transform: scale(1.06); opacity: 0; }
-    }
-    .tap-ripple {
-      animation: popRing 0.45s ease-out forwards;
-    }
     @keyframes floatUp {
       0% { transform: translateY(0) scale(0.8); opacity: 1; }
       100% { transform: translateY(-48px) scale(1.25); opacity: 0; }
@@ -41,14 +37,14 @@
       pointer-events: none;
     }
     .logo-box {
-      height: 44px;
+      height: 58px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
     }
     .logo-box img {
       max-height: 100%;
-      max-width: 165px;
+      max-width: 210px;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -57,10 +53,10 @@
 </head>
 <body class="flex flex-col h-screen text-slate-800">
 
-  <!-- ヘッダー（属性切替なし・シンプル構成） -->
+  <!-- ヘッダー -->
   <header class="flex items-center justify-between px-5 py-3 bg-white/90 backdrop-blur-md border-b border-pink-100 shadow-sm shrink-0">
     <div class="flex items-center gap-3">
-      <div class="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-sm tracking-wide shadow-sm">
+      <div class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-sm tracking-wide shadow-sm">
         ほいコレ
       </div>
       <div>
@@ -106,15 +102,14 @@
 
   <!-- メイン6タイルエリア -->
   <main class="flex-1 p-4 md:p-5 grid grid-cols-2 md:grid-cols-3 grid-rows-3 md:grid-rows-2 gap-3.5 md:gap-4 min-h-0">
-    <!-- JSで6カードを自動生成 -->
     <div id="cardsContainer" class="contents"></div>
   </main>
 
-  <!-- フッター（誤タップ取消＆ROOM ID表示） -->
+  <!-- フッター -->
   <footer class="px-5 py-2 bg-white/80 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500 shrink-0">
     <div class="flex items-center gap-2">
       <span>同期ルーム:</span>
-      <code id="roomNameDisplay" class="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">hoikuhaku2026</code>
+      <code id="roomNameDisplay" class="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">hoikuhaku2027</code>
     </div>
     <button onclick="undoLastTap()" id="undoBtn" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 font-bold text-slate-600 transition flex items-center gap-1">
       <span>↩</span>
@@ -127,7 +122,7 @@
     ご回答ありがとうございます！
   </div>
 
-  <!-- 集計・管理モーダル -->
+  <!-- 集計・管理モーダル（サクラ票機能なし） -->
   <div id="adminModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -139,33 +134,23 @@
       <div class="mt-4">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-bold text-slate-500">項目別カウント状況</span>
-          <button onclick="exportCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
-            CSVダウンロード
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="exportCSV()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+              CSVダウンロード
+            </button>
+            <button onclick="resetAllCounts()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 text-xs font-bold transition">
+              すべて0にリセット
+            </button>
+          </div>
         </div>
         <div id="adminSummaryList" class="space-y-2"></div>
-      </div>
-
-      <!-- 初期票（サクラ票）設定 -->
-      <div class="mt-6 pt-4 border-t border-slate-100">
-        <h3 class="text-sm font-extrabold text-slate-700 mb-1">開場前の初期票（ベース票）設定</h3>
-        <p class="text-xs text-slate-500 mb-3">0票スタートを避けたい場合、各項目に初期値をセットできます（全端末に同期されます）。</p>
-        <div id="seedInputsContainer" class="grid grid-cols-2 gap-2.5 mb-3"></div>
-        <div class="flex gap-2">
-          <button onclick="applySeedCounts()" class="flex-1 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 text-white text-xs font-extrabold shadow-sm transition">
-            この票数を全端末に反映する
-          </button>
-          <button onclick="resetAllCounts()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-rose-100 hover:text-rose-700 text-slate-600 text-xs font-bold transition">
-            すべて0にリセット
-          </button>
-        </div>
       </div>
 
       <!-- 同期ルーム変更 -->
       <div class="mt-5 pt-4 border-t border-slate-100">
         <label class="block text-xs font-bold text-slate-600 mb-1">同期ルームID（複数iPadで同じIDにするとリアルタイム同期）</label>
         <div class="flex gap-2">
-          <input id="roomInput" type="text" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono font-bold" placeholder="hoikuhaku2026" />
+          <input id="roomInput" type="text" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono font-bold" placeholder="hoikuhaku2027" />
           <button onclick="changeRoom()" class="px-4 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold">切替</button>
         </div>
       </div>
@@ -177,15 +162,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // 6項目の定義（4項目にROOTフォルダ内のロゴ画像を紐付け）
     const ITEMS = [
       {
         id: "fair",
         category: "新卒採用系",
-        title: "新卒採用（就職フェア）",
-        sub: "学生と直接話したい・母集団を増やしたい",
+        title: "学生と直接会って話したい",
+        sub: "就職フェアで母集団を増やしたい・園の魅力を伝えたい",
         logo: "./fair.png",
         fallbackIcon: "🎪",
+        iconBg: "bg-pink-50 text-pink-600",
         border: "border-pink-200 hover:border-pink-400",
         badgeBg: "bg-pink-100 text-pink-700",
         barColor: "bg-pink-500",
@@ -194,10 +179,11 @@
       {
         id: "navi",
         category: "新卒採用系",
-        title: "新卒採用（求人サイト）",
-        sub: "ほいコレナビ・Web媒体で応募を増やしたい",
+        title: "求人サイトで応募を増やしたい",
+        sub: "ほいコレナビ・Web媒体で見学やエントリーを集めたい",
         logo: "./navi.png",
         fallbackIcon: "💻",
+        iconBg: "bg-rose-50 text-rose-600",
         border: "border-rose-200 hover:border-rose-400",
         badgeBg: "bg-rose-100 text-rose-700",
         barColor: "bg-rose-500",
@@ -206,10 +192,11 @@
       {
         id: "trend",
         category: "新卒採用系",
-        title: "新卒採用全般（最新動向）",
-        sub: "現在の学生の動きや最新の採用トレンドを知りたい",
+        title: "最新の採用動向を知りたい",
+        sub: "いまの保育学生の動きや他園の採用トレンドを情報収集したい",
         logo: "./hoikore.png",
         fallbackIcon: "📊",
+        iconBg: "bg-amber-50 text-amber-600",
         border: "border-amber-200 hover:border-amber-400",
         badgeBg: "bg-amber-100 text-amber-800",
         barColor: "bg-amber-500",
@@ -218,10 +205,11 @@
       {
         id: "enkatsu",
         category: "園児募集系",
-        title: "園児募集・集客",
-        sub: "地域の保護者に選ばれる園づくり・定員充足",
+        title: "園児募集・定員充足を強化したい",
+        sub: "地域の保護者に選ばれる園づくり・入園希望者を増やしたい",
         logo: "./enkatsu.png",
         fallbackIcon: "🏫",
+        iconBg: "bg-emerald-50 text-emerald-600",
         border: "border-emerald-200 hover:border-emerald-400",
         badgeBg: "bg-emerald-100 text-emerald-700",
         barColor: "bg-emerald-500",
@@ -230,10 +218,11 @@
       {
         id: "hp",
         category: "クリエイティブ領域",
-        title: "HP制作・リニューアル",
-        sub: "採用や園児募集に強いホームページを作りたい",
+        title: "HP制作・リニューアルしたい",
+        sub: "新卒採用や園児募集に強いホームページを作りたい",
         logo: null,
         fallbackIcon: "🖥️",
+        iconBg: "bg-sky-100 text-sky-600",
         border: "border-sky-200 hover:border-sky-400",
         badgeBg: "bg-sky-100 text-sky-700",
         barColor: "bg-sky-500",
@@ -242,10 +231,11 @@
       {
         id: "movie",
         category: "クリエイティブ領域",
-        title: "PR動画・SNS発信",
-        sub: "園の雰囲気や保育の様子を動画で伝えたい",
+        title: "PR動画・SNSで発信したい",
+        sub: "園の雰囲気や保育の様子を動画で分かりやすく伝えたい",
         logo: null,
         fallbackIcon: "🎬",
+        iconBg: "bg-indigo-100 text-indigo-600",
         border: "border-indigo-200 hover:border-indigo-400",
         badgeBg: "bg-indigo-100 text-indigo-700",
         barColor: "bg-indigo-500",
@@ -253,24 +243,21 @@
       }
     ];
 
-    // 状態管理
     let counts = { fair: 0, navi: 0, trend: 0, enkatsu: 0, hp: 0, movie: 0 };
     let tapHistory = [];
     let soundEnabled = true;
-    let roomId = new URLSearchParams(window.location.search).get("room") || localStorage.getItem("hoikore_room") || "hoikuhaku2026";
+    let roomId = new URLSearchParams(window.location.search).get("room") || localStorage.getItem("hoikore_room") || "hoikuhaku2027";
     let db = null;
     let isOnlineSynced = false;
 
     document.getElementById("roomNameDisplay").textContent = roomId;
     document.getElementById("roomInput").value = roomId;
 
-    // ローカルストレージから初期復元
     const savedLocal = localStorage.getItem("hoikore_counts_" + roomId);
     if (savedLocal) {
       try { counts = { ...counts, ...JSON.parse(savedLocal) }; } catch (e) {}
     }
 
-    // オンライン同期セットアップ（パブリックデモ用Firebase構成／失敗時は自動ローカル動作）
     function initSync() {
       try {
         const firebaseConfig = {
@@ -313,7 +300,6 @@
       }
     }
 
-    // 効果音（Web Audio API）
     function playPopSound() {
       if (!soundEnabled) return;
       try {
@@ -338,16 +324,13 @@
       document.getElementById("soundOffIcon").classList.toggle("hidden", soundEnabled);
     };
 
-    // タップ処理
-    window.handleCardTap = function (itemId, event) {
+    window.handleCardTap = function (itemId) {
       playPopSound();
 
-      // カウント加算
       counts[itemId] = (counts[itemId] || 0) + 1;
       tapHistory.push({ itemId, time: new Date().toISOString() });
       localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
 
-      // Firebaseトランザクション更新
       if (db && isOnlineSynced) {
         const itemRef = ref(db, `rooms/${roomId}/counts/${itemId}`);
         runTransaction(itemRef, (curr) => (curr || 0) + 1);
@@ -372,7 +355,6 @@
       window._toastTimer = setTimeout(() => { toast.style.opacity = "0"; }, 1100);
     }
 
-    // 直前の1タップ取り消し
     window.undoLastTap = function () {
       if (tapHistory.length === 0) return;
       const last = tapHistory.pop();
@@ -387,7 +369,6 @@
       }
     };
 
-    // 順位計算
     function getRanks() {
       const sorted = [...ITEMS]
         .map(it => ({ id: it.id, count: counts[it.id] || 0 }))
@@ -405,7 +386,6 @@
       return rankMap;
     }
 
-    // カード描画
     function renderCards() {
       const container = document.getElementById("cardsContainer");
       const total = Object.values(counts).reduce((a, b) => a + b, 0);
@@ -426,20 +406,19 @@
           rankBadge = `<span class="px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800 text-xs font-extrabold">3位</span>`;
         }
 
-        // ロゴ画像またはアイコン表示（読み込みエラー時は自動フォールバック）
         const mediaHtml = item.logo
           ? `<div class="logo-box">
                <img src="${item.logo}" alt="${item.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
-               <span style="display:none;" class="w-11 h-11 rounded-2xl bg-slate-100 items-center justify-center text-2xl">${item.fallbackIcon}</span>
+               <span style="display:none;" class="w-14 h-14 rounded-2xl ${item.iconBg} items-center justify-center text-3xl">${item.fallbackIcon}</span>
              </div>`
           : `<div class="logo-box">
-               <span class="w-11 h-11 rounded-2xl bg-slate-100 inline-flex items-center justify-center text-2xl">${item.fallbackIcon}</span>
+               <span class="w-14 h-14 rounded-2xl ${item.iconBg} inline-flex items-center justify-center text-3xl shadow-xs">${item.fallbackIcon}</span>
              </div>`;
 
         return `
           <button
             id="card-${item.id}"
-            onclick="handleCardTap('${item.id}', event)"
+            onclick="handleCardTap('${item.id}')"
             class="card-btn relative bg-white rounded-3xl p-4 md:p-5 border-2 ${item.border} shadow-sm hover:shadow-md flex flex-col justify-between text-left overflow-hidden h-full"
           >
             <!-- 上部：カテゴリ＆順位 -->
@@ -454,7 +433,7 @@
 
             <!-- 中央：ロゴ＋タイトル＋補足 -->
             <div class="my-auto py-1">
-              <div class="mb-2">${mediaHtml}</div>
+              <div class="mb-2.5">${mediaHtml}</div>
               <h2 class="text-base md:text-xl font-extrabold text-slate-800 leading-snug">
                 ${item.title}
               </h2>
@@ -481,16 +460,8 @@
       }).join("");
     }
 
-    // 管理モーダル制御
     window.openAdminModal = function () {
       renderAdminSummary();
-      const seedContainer = document.getElementById("seedInputsContainer");
-      seedContainer.innerHTML = ITEMS.map(it => `
-        <div class="flex items-center justify-between bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
-          <span class="text-xs font-bold text-slate-700 truncate pr-2">${it.title}</span>
-          <input id="seed-${it.id}" type="number" min="0" value="${counts[it.id] || 0}" class="w-16 px-2 py-1 rounded-lg border border-slate-300 text-right text-sm font-extrabold" />
-        </div>
-      `).join("");
       document.getElementById("adminModal").classList.remove("hidden");
       document.getElementById("adminModal").classList.add("flex");
     };
@@ -508,27 +479,13 @@
         const c = counts[it.id] || 0;
         const pct = total > 0 ? ((c / total) * 100).toFixed(1) : "0.0";
         return `
-          <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 text-xs">
+          <div class="flex items-center justify-between px-3 py-2.5 rounded-xl bg-slate-50 text-xs">
             <span class="font-bold text-slate-700">${it.title}</span>
             <span class="font-extrabold text-slate-900">${c} 票 <span class="text-slate-400 font-normal">(${pct}%)</span></span>
           </div>
         `;
       }).join("");
     }
-
-    window.applySeedCounts = function () {
-      ITEMS.forEach(it => {
-        const val = parseInt(document.getElementById("seed-" + it.id).value, 10);
-        counts[it.id] = isNaN(val) || val < 0 ? 0 : val;
-      });
-      localStorage.setItem("hoikore_counts_" + roomId, JSON.stringify(counts));
-      if (db && isOnlineSynced) {
-        set(ref(db, "rooms/" + roomId + "/counts"), counts);
-      }
-      renderCards();
-      renderAdminSummary();
-      closeAdminModal();
-    };
 
     window.resetAllCounts = function () {
       if (!confirm("すべてのカウントを0にリセットしますか？")) return;
@@ -550,7 +507,6 @@
       window.location.search = "?room=" + encodeURIComponent(nextRoom);
     };
 
-    // CSV出力（属性列なし）
     window.exportCSV = function () {
       const total = Object.values(counts).reduce((a, b) => a + b, 0);
       const rows = [["カテゴリ", "項目名", "票数", "構成比(%)"]];
@@ -569,7 +525,6 @@
       URL.revokeObjectURL(url);
     };
 
-    // 初期描画＆同期開始
     renderCards();
     initSync();
   </script>
