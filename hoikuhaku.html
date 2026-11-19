@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet" />
-  <style>
+ <style>
     * {
       font-family: 'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -23,61 +23,61 @@
       background: linear-gradient(135deg, #fff5f7 0%, #fffbeb 50%, #f0f9ff 100%);
     }
 
-    /* カード自体をコンテナとして定義し、カードサイズに連動した文字・要素サイズを自動計算 */
+    /* カード自体をコンテナとして定義し、大画面でも上限なくスケールさせる */
     .card-btn {
       container-type: size;
       container-name: card;
-      padding: clamp(0.75rem, 4.5cqmin, 1.5rem);
-      border-radius: clamp(1.1rem, 6cqmin, 1.75rem);
+      padding: clamp(0.75rem, 5cqmin, 2.5rem);
+      border-radius: clamp(1.1rem, 6cqmin, 2.25rem);
       transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease;
     }
     .card-btn:active {
       transform: scale(0.96);
     }
 
-    /* カードサイズ連動フォント＆要素スケール */
+    /* カードサイズ連動フォント＆要素スケール（大画面対応） */
     .card-badge {
-      font-size: clamp(0.65rem, 3.2cqmin, 0.85rem);
-      padding: clamp(0.15rem, 0.9cqmin, 0.3rem) clamp(0.5rem, 2.5cqmin, 0.85rem);
+      font-size: clamp(0.65rem, 3.6cqmin, 1.25rem);
+      padding: clamp(0.15rem, 1cqmin, 0.45rem) clamp(0.5rem, 2.8cqmin, 1.2rem);
     }
     .card-rank {
-      font-size: clamp(0.65rem, 3.2cqmin, 0.85rem);
-      padding: clamp(0.15rem, 0.9cqmin, 0.3rem) clamp(0.45rem, 2.2cqmin, 0.75rem);
+      font-size: clamp(0.65rem, 3.6cqmin, 1.25rem);
+      padding: clamp(0.15rem, 1cqmin, 0.45rem) clamp(0.45rem, 2.5cqmin, 1.1rem);
     }
     .subtle-logo {
-      height: clamp(18px, 8.5cqh, 30px);
-      max-width: clamp(72px, 28cqw, 125px);
+      height: clamp(18px, 10cqh, 52px);
+      max-width: clamp(72px, 32cqw, 200px);
       width: auto;
       object-fit: contain;
-      opacity: 0.85;
+      opacity: 0.88;
     }
     .card-icon-box {
-      width: clamp(2.5rem, 15cqmin, 4.25rem);
-      height: clamp(2.5rem, 15cqmin, 4.25rem);
-      font-size: clamp(1.25rem, 8cqmin, 2.25rem);
-      border-radius: clamp(0.75rem, 4cqmin, 1.15rem);
+      width: clamp(2.5rem, 18cqmin, 6.5rem);
+      height: clamp(2.5rem, 18cqmin, 6.5rem);
+      font-size: clamp(1.25rem, 9.5cqmin, 3.5rem);
+      border-radius: clamp(0.75rem, 4.5cqmin, 1.6rem);
     }
     .card-title {
-      font-size: clamp(0.95rem, min(5.4cqw, 8.2cqh), 1.65rem);
-      line-height: 1.28;
+      font-size: clamp(1rem, min(6.2cqw, 10cqh), 2.75rem);
+      line-height: 1.25;
     }
     .card-sub {
-      font-size: clamp(0.72rem, min(3.6cqw, 5.4cqh), 1.05rem);
+      font-size: clamp(0.75rem, min(4cqw, 6.2cqh), 1.55rem);
       line-height: 1.4;
-      margin-top: clamp(0.2rem, 1.2cqh, 0.45rem);
+      margin-top: clamp(0.25rem, 1.5cqh, 0.75rem);
     }
     .card-tap-hint {
-      font-size: clamp(0.68rem, 3.2cqmin, 0.88rem);
+      font-size: clamp(0.68rem, 3.5cqmin, 1.2rem);
     }
     .card-count-num {
-      font-size: clamp(1.2rem, min(7cqw, 10.5cqh), 2.15rem);
+      font-size: clamp(1.25rem, min(8.2cqw, 13cqh), 3.6rem);
       line-height: 1;
     }
     .card-count-unit {
-      font-size: clamp(0.7rem, 3.3cqmin, 0.92rem);
+      font-size: clamp(0.72rem, 3.8cqmin, 1.35rem);
     }
     .card-progress {
-      height: clamp(0.35rem, 2.2cqh, 0.6rem);
+      height: clamp(0.35rem, 2.6cqh, 0.9rem);
     }
 
     @keyframes floatUp {
