@@ -22,78 +22,63 @@
       overflow: hidden;
       background: linear-gradient(135deg, #fff5f7 0%, #fffbeb 50%, #f0f9ff 100%);
     }
-
-    /* カード自体をコンテナとして定義 */
     .card-btn {
       container-type: size;
       container-name: card;
-      padding: clamp(0.55rem, 4cqmin, 2.2rem);
-      border-radius: clamp(0.95rem, 5.5cqmin, 2.1rem);
+      padding: clamp(0.75rem, 4.5cqmin, 2rem);
+      border-radius: clamp(1.1rem, 6cqmin, 2rem);
       transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease;
     }
     .card-btn:active {
       transform: scale(0.96);
     }
 
-    /* カードサイズ連動フォント＆要素スケール（スマホ縦〜PC大画面まで対応） */
+    /* カードサイズに連動する大きな文字・要素設計 */
     .card-badge {
-      font-size: clamp(0.58rem, min(3.4cqw, 4.2cqh), 1.2rem);
-      padding: clamp(0.1rem, 0.8cqmin, 0.4rem) clamp(0.4rem, 2.4cqmin, 1.1rem);
+      font-size: clamp(0.68rem, min(3.6cqw, 4.8cqh), 1.25rem);
+      padding: clamp(0.15rem, 1cqmin, 0.45rem) clamp(0.5rem, 2.6cqmin, 1.15rem);
       line-height: 1.2;
     }
     .card-rank {
-      font-size: clamp(0.58rem, min(3.4cqw, 4.2cqh), 1.2rem);
-      padding: clamp(0.1rem, 0.8cqmin, 0.4rem) clamp(0.38rem, 2.2cqmin, 1.05rem);
+      font-size: clamp(0.68rem, min(3.6cqw, 4.8cqh), 1.25rem);
+      padding: clamp(0.15rem, 1cqmin, 0.45rem) clamp(0.45rem, 2.4cqmin, 1.1rem);
       line-height: 1.2;
     }
     .subtle-logo {
-      height: clamp(14px, 8.5cqh, 48px);
-      max-width: clamp(54px, 30cqw, 190px);
+      height: clamp(18px, 10cqh, 48px);
+      max-width: clamp(68px, 30cqw, 180px);
       width: auto;
       object-fit: contain;
       opacity: 0.88;
     }
     .card-icon-box {
-      width: clamp(2rem, min(15cqw, 20cqh), 6rem);
-      height: clamp(2rem, min(15cqw, 20cqh), 6rem);
-      font-size: clamp(1.05rem, min(8cqw, 11cqh), 3.3rem);
-      border-radius: clamp(0.6rem, 4cqmin, 1.5rem);
+      width: clamp(2.6rem, min(18cqw, 25cqh), 6.2rem);
+      height: clamp(2.6rem, min(18cqw, 25cqh), 6.2rem);
+      font-size: clamp(1.4rem, min(10cqw, 14cqh), 3.4rem);
+      border-radius: clamp(0.75rem, 4.5cqmin, 1.5rem);
     }
     .card-title {
-      font-size: clamp(0.82rem, min(5.6cqw, 8.2cqh), 2.6rem);
-      line-height: 1.24;
-      word-break: keep-all;
-      overflow-wrap: anywhere;
-    }
-    .card-sub {
-      font-size: clamp(0.62rem, min(3.7cqw, 5.2cqh), 1.45rem);
-      line-height: 1.32;
-      margin-top: clamp(0.15rem, 1cqh, 0.65rem);
+      font-size: clamp(1.15rem, min(8.2cqw, 13.5cqh), 3.25rem);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
     }
     .card-tap-hint {
-      font-size: clamp(0.58rem, min(3.3cqw, 4.2cqh), 1.15rem);
+      font-size: clamp(0.68rem, min(3.6cqw, 4.8cqh), 1.2rem);
     }
     .card-count-num {
-      font-size: clamp(1.05rem, min(7.6cqw, 11cqh), 3.4rem);
+      font-size: clamp(1.35rem, min(8.8cqw, 13.5cqh), 3.6rem);
       line-height: 1;
     }
     .card-count-unit {
-      font-size: clamp(0.6rem, min(3.5cqw, 4.5cqh), 1.3rem);
+      font-size: clamp(0.72rem, min(3.8cqw, 5cqh), 1.35rem);
     }
     .card-progress {
-      height: clamp(0.28rem, 2.2cqh, 0.85rem);
-    }
-
-    /* スマホなど縦が特に狭いカードでは補足文を1行に抑えてタイトルを優先表示 */
-    @container card (max-height: 185px) {
-      .card-sub {
-        -webkit-line-clamp: 1;
-      }
+      height: clamp(0.35rem, 2.6cqh, 0.9rem);
     }
 
     @keyframes floatUp {
       0% { transform: translateY(0) scale(0.8); opacity: 1; }
-      100% { transform: translateY(-42px) scale(1.25); opacity: 0; }
+      100% { transform: translateY(-48px) scale(1.25); opacity: 0; }
     }
     .plus-one {
       animation: floatUp 0.65s ease-out forwards;
@@ -103,56 +88,55 @@
 </head>
 <body class="flex flex-col h-screen text-slate-800">
 
-  <!-- ヘッダー（スマホでは2段構成にして質問文を全文表示） -->
-  <header class="px-3.5 md:px-6 py-2 md:py-3 bg-white/90 backdrop-blur-md border-b border-pink-100 shadow-sm shrink-0">
+  <!-- ヘッダー -->
+  <header class="px-4 md:px-6 py-2.5 md:py-3.5 bg-white/90 backdrop-blur-md border-b border-pink-100 shadow-sm shrink-0">
     <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div class="px-3 py-1 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-xs md:text-sm tracking-wide shadow-sm shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-extrabold text-xs md:text-base tracking-wide shadow-sm shrink-0">
           ほいコレ
         </div>
-        <!-- PC・タブレット用タイトル -->
         <div class="hidden md:block min-w-0">
-          <h1 class="text-xl font-extrabold text-slate-800 leading-tight">
+          <h1 class="text-xl lg:text-2xl font-extrabold text-slate-800 leading-tight">
             いま、一番気になっているテーマはどれですか？
           </h1>
-          <p class="text-xs text-slate-500 font-medium">
+          <p class="text-xs lg:text-sm text-slate-500 font-medium">
             当てはまるものをタップしてください（複数選択OK！）
           </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5 md:gap-2.5 shrink-0">
+      <div class="flex items-center gap-2 md:gap-2.5 shrink-0">
         <!-- 同期ステータス -->
         <div id="syncBadge" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>全端末同期中</span>
+          <span>リアルタイム同期中</span>
         </div>
 
         <!-- 総回答数 -->
-        <div class="px-2.5 md:px-3.5 py-1 md:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-right">
+        <div class="px-3 md:px-4 py-1 md:py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-right">
           <span class="text-[9px] md:text-[10px] font-bold text-slate-500 block leading-none">TOTAL</span>
-          <span id="totalCountDisplay" class="text-sm md:text-lg font-extrabold text-slate-800 leading-tight">0</span>
-          <span class="text-[11px] md:text-xs font-bold text-slate-500">票</span>
+          <span id="totalCountDisplay" class="text-base md:text-xl font-extrabold text-slate-800 leading-tight">0</span>
+          <span class="text-xs font-bold text-slate-500">票</span>
         </div>
 
         <!-- 音声ON/OFF -->
         <button id="soundToggleBtn" onclick="toggleSound()" class="p-2 md:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="効果音切替">
-          <svg id="soundOnIcon" class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <svg id="soundOnIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
           </svg>
-          <svg id="soundOffIcon" class="w-4 h-4 md:w-5 md:h-5 hidden text-slate-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <svg id="soundOffIcon" class="w-5 h-5 hidden text-slate-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/>
           </svg>
         </button>
 
         <!-- 管理・集計モーダルボタン -->
-        <button onclick="openAdminModal()" class="px-2.5 md:px-3.5 py-1.5 md:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-[11px] md:text-xs font-bold shadow-sm transition">
+        <button onclick="openAdminModal()" class="px-3 md:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs md:text-sm font-bold shadow-sm transition">
           集計・設定
         </button>
       </div>
     </div>
 
-    <!-- スマホ専用タイトル行（省略なしで全文表示） -->
+    <!-- スマホ縦画面用タイトル -->
     <div class="md:hidden mt-1.5 pt-1.5 border-t border-pink-100/70">
       <h1 class="text-sm font-extrabold text-slate-800 leading-snug">
         いま、一番気になっているテーマはどれですか？
@@ -164,24 +148,24 @@
   </header>
 
   <!-- メイン6タイルエリア -->
-  <main class="flex-1 p-2.5 sm:p-4 md:p-5 grid grid-cols-2 md:grid-cols-3 grid-rows-3 md:grid-rows-2 gap-2.5 sm:gap-3.5 md:gap-4 min-h-0">
+  <main class="flex-1 p-3 sm:p-4 md:p-5 grid grid-cols-2 md:grid-cols-3 grid-rows-3 md:grid-rows-2 gap-3 sm:gap-4 md:gap-5 min-h-0">
     <div id="cardsContainer" class="contents"></div>
   </main>
 
   <!-- フッター -->
-  <footer class="px-3.5 md:px-6 py-1.5 md:py-2 bg-white/80 border-t border-slate-200/70 flex items-center justify-between text-[11px] md:text-xs text-slate-500 shrink-0">
-    <div class="flex items-center gap-1.5">
+  <footer class="px-4 md:px-6 py-2 bg-white/80 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500 shrink-0">
+    <div class="flex items-center gap-2">
       <span>同期ルーム:</span>
-      <code id="roomNameDisplay" class="px-1.5 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">hoikuhaku2027</code>
+      <code id="roomNameDisplay" class="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-700">hoikuhaku2027</code>
     </div>
-    <button onclick="undoLastTap()" id="undoBtn" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 font-bold text-slate-600 transition flex items-center gap-1">
+    <button onclick="undoLastTap()" id="undoBtn" class="px-3 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 font-bold text-slate-600 transition flex items-center gap-1">
       <span>↩</span>
       <span>直前の1タップを取り消す</span>
     </button>
   </footer>
 
   <!-- タップ御礼トースト -->
-  <div id="thanksToast" class="fixed bottom-12 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-slate-900/90 text-white font-bold text-xs md:text-sm shadow-xl opacity-0 pointer-events-none transition-opacity duration-200 z-40 whitespace-nowrap">
+  <div id="thanksToast" class="fixed bottom-14 left-1/2 -translate-x-1/2 px-6 py-2.5 rounded-full bg-slate-900/90 text-white font-bold text-sm md:text-base shadow-xl opacity-0 pointer-events-none transition-opacity duration-200 z-40 whitespace-nowrap">
     ご回答ありがとうございます！
   </div>
 
@@ -229,8 +213,7 @@
       {
         id: "fair",
         category: "新卒採用系",
-        title: "学生と直接会って話したい",
-        sub: "就職フェアで母集団を増やしたい・園の魅力を伝えたい",
+        title: "学生と話したい",
         logo: "./fair.png",
         icon: "🎪",
         iconBg: "bg-pink-100 text-pink-600",
@@ -242,8 +225,7 @@
       {
         id: "navi",
         category: "新卒採用系",
-        title: "求人サイトで応募を増やしたい",
-        sub: "Web媒体で見学やエントリーを集めたい",
+        title: "求人サイト",
         logo: "./navi.png",
         icon: "💻",
         iconBg: "bg-rose-100 text-rose-600",
@@ -255,8 +237,7 @@
       {
         id: "trend",
         category: "新卒採用系",
-        title: "最新の採用動向を知りたい",
-        sub: "いまの保育学生の動きや他園の採用トレンドを情報収集したい",
+        title: "採用動向",
         logo: "./hoikore.png",
         icon: "📊",
         iconBg: "bg-amber-100 text-amber-600",
@@ -268,8 +249,7 @@
       {
         id: "enkatsu",
         category: "園児募集系",
-        title: "園児募集・定員充足を強化したい",
-        sub: "地域の保護者に選ばれる園づくり・入園希望者を増やしたい",
+        title: "園児募集",
         logo: "./enkatsu.png",
         icon: "🏫",
         iconBg: "bg-emerald-100 text-emerald-600",
@@ -281,8 +261,7 @@
       {
         id: "hp",
         category: "クリエイティブ領域",
-        title: "HP制作・リニューアルしたい",
-        sub: "新卒採用や園児募集に強いホームページを作りたい",
+        title: "HP制作",
         logo: "./enpure.png",
         icon: "🖥️",
         iconBg: "bg-sky-100 text-sky-600",
@@ -294,8 +273,7 @@
       {
         id: "movie",
         category: "クリエイティブ領域",
-        title: "PR動画・SNSで発信したい",
-        sub: "園の雰囲気や保育の様子を動画で分かりやすく伝えたい",
+        title: "PR動画/SNS",
         logo: null,
         icon: "🎬",
         iconBg: "bg-indigo-100 text-indigo-600",
@@ -408,7 +386,7 @@
       if (card) {
         const plus = document.createElement("div");
         plus.textContent = "+1";
-        plus.className = "plus-one absolute bottom-9 right-4 text-xl md:text-2xl font-extrabold text-pink-500 drop-shadow-sm";
+        plus.className = "plus-one absolute bottom-12 right-5 text-2xl md:text-3xl font-extrabold text-pink-500 drop-shadow-sm";
         card.appendChild(plus);
         setTimeout(() => plus.remove(), 700);
       }
@@ -477,7 +455,7 @@
           <button
             id="card-${item.id}"
             onclick="handleCardTap('${item.id}')"
-            class="card-btn relative bg-white border-2 ${item.border} shadow-sm hover:shadow-md flex flex-col justify-between text-left overflow-hidden h-full w-full gap-1"
+            class="card-btn relative bg-white border-2 ${item.border} shadow-sm hover:shadow-md flex flex-col justify-between text-left overflow-hidden h-full w-full gap-1.5"
           >
             <!-- 上部：カテゴリ（左）＆ 順位＋さりげないロゴ（右） -->
             <div class="w-full flex items-center justify-between gap-1.5 shrink-0">
@@ -490,26 +468,21 @@
               </div>
             </div>
 
-            <!-- 中央：親しみやすいアイコン＋お悩み・テーマ見出し（flex-1で上下と重ならないよう領域確保） -->
-            <div class="flex-1 flex items-center gap-2 sm:gap-3.5 w-full min-h-0 overflow-hidden">
+            <!-- 中央：大きなアイコン＋大きなテーマ見出しのみ（サブタイトルなし） -->
+            <div class="flex-1 flex items-center gap-3 md:gap-4 w-full min-h-0">
               <div class="card-icon-box ${item.iconBg} flex items-center justify-center shrink-0">
                 ${item.icon}
               </div>
-              <div class="min-w-0 flex-1">
-                <h2 class="card-title font-extrabold text-slate-800 line-clamp-2">
-                  ${item.title}
-                </h2>
-                <p class="card-sub text-slate-500 font-medium line-clamp-2">
-                  ${item.sub}
-                </p>
-              </div>
+              <h2 class="card-title font-extrabold text-slate-800 min-w-0 flex-1">
+                ${item.title}
+              </h2>
             </div>
 
             <!-- 下部：リアルタイム票数・割合バー -->
-            <div class="w-full pt-1.5 border-t border-slate-100 shrink-0">
+            <div class="w-full pt-2 border-t border-slate-100 shrink-0">
               <div class="flex items-baseline justify-between mb-1">
                 <span class="card-tap-hint font-bold text-slate-400">タップして投票</span>
-                <div class="flex items-baseline gap-0.5">
+                <div class="flex items-baseline gap-1">
                   <span class="card-count-num font-extrabold ${item.accentText}">${count}</span>
                   <span class="card-count-unit font-bold text-slate-500">票 (${pct}%)</span>
                 </div>
